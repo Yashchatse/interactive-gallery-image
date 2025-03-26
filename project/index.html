@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Gallery with Navbar</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #6c63ff;
+        --secondary-color: #4d44db;
+        --text-color: #333;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-color);
+      margin: 0;
+      overflow-x: hidden;
+      transition: var(--transition);
+    }
+    body.dark-mode {
+      background-color: var(--dark-color);
+      color: white;
+    }
+      .header {
+        background-color: white;
+        box-shadow: var(--shadow);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: var(--transition);
+      }
+
+      .header.sticky {
+      background-color: var(--primary-color);
+      color: white;
+    }
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 80px;
+      }
+
+      .nav-logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        /* text-decoration: none; */
+      }
+
+      .nav-menu {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-item {
+        margin-left: 30px;
+      }
+
+      .nav-link {
+        color: var(--text-color);
+        text-decoration: none;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--primary-color);
+      }
+      .dark-mode-toggle {
+      cursor: pointer;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      transition: var(--transition);
+    }
+
+      .gallery-container {
+        margin-top: 100px;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .gallery-item {
+        position: relative;
+        flex: 0 0 300px;
+        margin: 0 10px;
+        transition: transform 0.5s;
+        cursor: pointer;
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 15px;
+      }
+
+      .info-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+
+      .gallery-item:hover .info-overlay {
+        opacity: 1;
+      }
+
+      .gallery-item.active {
+        transform: scale(1.1);
+      }
+      #lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #lightbox img {
+      width: 80%;
+      height: auto;
+      border-radius: 20px;
+    }
+
+    #lightbox button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <nav class="navbar">
+          <a href="#" class="nav-logo">Elegant</a>
+          <ul class="nav-menu">
+            <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Gallery</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+          </ul>
+          <button class="dark-mode-toggle">🌙 Toggle Dark Mode</button>
+        </nav>
+      </div>
+    </header>
+
+    <div class="gallery-container">
+        <div class="gallery-item" data-img="../../html/121804.jpg">
+            <img src="../../html/121804.jpg" alt="Nature">
+            <div class="info-overlay">Nature</div>
+          </div>
+        <div class="gallery-item" data-img="../../html/1249684.jpg">
+            <img src="../../html/1249684.jpg" alt="Nature">
+            <div class="info-overlay">Nature</div>
+          </div>
+        <div class="gallery-item" data-img="../../html/349872.jpg">
+            <img src="../../html/349872.jpg" alt="Nature">
+            <div class="info-overlay">Nature</div>
+          </div>
+      
+    </div>
+
+   
+
+    <script>
+      $(document).ready(function () {
+        $(".gallery-item").hover(function () {
+          $(".gallery-item").removeClass("active");
+          $(this).addClass("active");
+        });
+
+        $(".gallery-item").click(function () {
+          const title = $(this).data("title");
+          const description = $(this).data("description");
+          const imgSrc = $(this).find("img").attr("src");
+          $("body").html(`
+          <div style="padding:50px;text-align:center;">
+            <h1>${title}</h1>
+            <img src="${imgSrc}" style="width:80%;border-radius:20px;" />
+            <p style="margin-top:20px;font-size:1.2rem;">${description}</p>
+            <a href="#" onclick="location.reload();" style="color: var(--primary-color); text-decoration: underline;">Go Back</a>
+          </div>
+        `);
+        });
+      });
+      $(document).ready(function () {
+        $(".gallery-item").click(function () {
+          const imgSrc = $(this).data("img");
+          $("#lightbox img").attr("src", imgSrc);
+          $("#lightbox").fadeIn();
+        });
+
+        $(".dark-mode-toggle").click(function () {
+          $("body").toggleClass("dark-mode");
+        });
+
+        $(window).scroll(function () {
+          if ($(window).scrollTop() > 50) {
+            $(".header").addClass("sticky");
+          } else {
+            $(".header").removeClass("sticky");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
